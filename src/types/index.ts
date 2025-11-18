@@ -7,6 +7,14 @@ export interface IUser {
   id: string;
   email: string;
   name: string;
+  password: string;
+  role: UserRole;
+}
+
+export interface IUserCreate {
+  email: string;
+  name: string;
+  password: string;
   role: UserRole;
 }
 

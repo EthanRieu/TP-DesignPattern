@@ -5,6 +5,14 @@ export interface GetUsersArguments extends SubCommandArguments {}
 
 export const GetUsersArgumentsConfig = {}
 
+export interface GetUserByIdArguments extends SubCommandArguments {
+  id: string;
+}
+
+export const GetUserByIdArgumentsConfig = {
+  id: String,
+}
+
 export interface CreateUserArguments extends SubCommandArguments {
   name: string;
   age: number;

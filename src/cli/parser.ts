@@ -5,7 +5,9 @@ import {
   type CreateUserArguments,
   CreateUserArgumentsConfig,
   type GetUsersArguments,
-  GetUsersArgumentsConfig
+  GetUsersArgumentsConfig,
+  type GetUserByIdArguments,
+  GetUserByIdArgumentsConfig,
 } from "./sub-command-arguments/users.js";
 import {type GetOrdersArguments, GetOrdersArgumentsConfig} from "./sub-command-arguments/orders.js";
 import * as path from "node:path";
@@ -41,6 +43,10 @@ export function parseArgs(cliArgs: string[]): { command: string, arguments: SubC
       break;
     case Commands.CreateUser:
       args = parse<CreateUserArguments>(CreateUserArgumentsConfig, {argv: rawCommandArguments });
+      break;
+    case Commands.GetUserById:
+      args = parse<GetUserByIdArguments>(GetUserByIdArgumentsConfig, {argv: rawCommandArguments });
+      break;
   }
 
   return { command, arguments: args };

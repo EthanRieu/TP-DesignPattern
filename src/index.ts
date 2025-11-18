@@ -3,7 +3,9 @@ import {parseArgs} from "./cli/index.js";
 
 const message: string = 'Hello TypeScript 🔁';
 console.log(message);
-console.log(parseArgs(process.argv));
+// console.log(parseArgs(process.argv));
+
+
 
 async function main() {
   const users = await AuthService.getUsers();
