@@ -26,6 +26,11 @@ npx prisma migrate dev
 
 Cela va créer automatiquement le fichier `src/prisma/dev.db` avec toutes les tables (User, Product, Order, OrderItem).
 
+3. Visualiser sa DB -> Interface web de la DB SQLite
+```bash
+npm run db:studio
+```
+
 ### Build the project with hot reloading
 
 `npm run dev`
