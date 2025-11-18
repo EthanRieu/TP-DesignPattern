@@ -1,2 +1,3 @@
-const message: string = "Hello TypeScript 🔁";
-console.log(message);
+import {parseArgs} from "./cli/index.js";
+
+console.log(parseArgs(process.argv));
