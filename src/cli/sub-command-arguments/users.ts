@@ -24,3 +24,13 @@ export const CreateUserArgumentsConfig = {
   age: Number,
   email: { type: String, optional: true },
 }
+
+export interface LoginArguments extends SubCommandArguments {
+  email: string;
+  password: string;
+}
+
+export const LoginArgumentsConfig = {
+  email: String,
+  password: String,
+}

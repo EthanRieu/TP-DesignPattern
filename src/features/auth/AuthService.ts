@@ -69,4 +69,19 @@ export class AuthService {
       throw error;
     }
   }
+
+  public static async login(email: string, password: string): Promise<User | null> {
+    const prisma = PrismaClientSingleton.getInstance();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      return null;
+    }
+    if (!await bcrypt.compare(password, user.password)) {
+      throw new Error('Invalid password');
+    }
+    console.log(`✅ User ${user.email} logged in successfully`);
+    return user;
+  }
 }
