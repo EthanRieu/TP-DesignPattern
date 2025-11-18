@@ -4,15 +4,21 @@
     "dev": "tsc -w",
     "start": "node dist/index.js",
     "test:db": "tsc && node dist/test-db-connection.js",
-    "db:studio": "prisma studio --schema=src/prisma/schema.prisma"
+    "db:studio": "prisma studio --schema=src/prisma/schema.prisma",
+    "db:seed": "tsc && node dist/prisma/seed.js"
+  },
+  "prisma": {
+    "seed": "tsx src/prisma/seed.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^24.10.1",
     "typescript": "^5.9.3"
   },
   "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "prisma": "^6.19.0",
     "ts-command-line-args": "^2.5.1"

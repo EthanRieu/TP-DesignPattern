@@ -31,6 +31,11 @@ Cela va créer automatiquement le fichier `src/prisma/dev.db` avec toutes les ta
 npm run db:studio
 ```
 
+4. Initialiser les datas de test par défaut (du src/prisma/seed.ts)
+```bash
+npm run db:seed
+```
+
 ### Build the project with hot reloading
 
 `npm run dev`
