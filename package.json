@@ -9,6 +9,9 @@
   },
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "dotenv": "^17.2.3",
+    "prisma": "^6.19.0",
     "ts-command-line-args": "^2.5.1"
   }
 }
