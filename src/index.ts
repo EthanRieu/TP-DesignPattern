@@ -1,5 +1,6 @@
 import { AuthService } from './features/auth/AuthService.js';
 import {parseArgs} from "./cli/index.js";
+import {replLoop} from "./repl/index.js";
 
 const message: string = 'Hello TypeScript 🔁';
 console.log(message);
@@ -11,3 +12,5 @@ async function main() {
 }
 
 main();
+await replLoop();
+process.exit(0);
