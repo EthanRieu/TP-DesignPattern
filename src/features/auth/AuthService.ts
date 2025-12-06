@@ -3,6 +3,7 @@ import { PrismaClientSingleton } from '../../prisma/client.js';
 import type { IUser, IUserCreate, IUserUpdate } from '../../types/index.js';
 import * as bcrypt from 'bcrypt';
 import { SessionService } from './SessionService.js';
+import { UserFactory } from './UserFactory.js';
 
 export class AuthService {
   private static instance: AuthService | null = null;
@@ -30,20 +31,8 @@ export class AuthService {
   }
 
   public static async createUser(user: IUserCreate): Promise<User> {
-    const prisma = PrismaClientSingleton.getInstance();
     try {
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-
-      const userWithHashedPassword = {
-        ...user,
-        password: hashedPassword,
-      };
-
-      const newUser = await prisma.user.create({
-        data: userWithHashedPassword,
-      });
-      console.log(`✅ User ${user.email} created successfully`);
-      return newUser;
+      return await UserFactory.createUser(user);
     } catch (error) {
       console.error(`❌ Error creating user:`, error);
       throw error;
