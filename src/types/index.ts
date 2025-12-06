@@ -1,7 +1,12 @@
 export type UserRole = 'CUSTOMER' | 'SELLER' | 'ADMIN';
-export type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED';
 export type ProductCategory = 'ELECTRONICS' | 'CLOTHING' | 'FOOD';
-export type PaymentMethod = 'CREDIT_CARD' | 'PAYPAL' ;
+export type PaymentMethod = 'CREDIT_CARD' | 'PAYPAL';
 
 export interface IUser {
   id: string;
@@ -16,6 +21,14 @@ export interface IUserCreate {
   name: string;
   password: string;
   role: UserRole;
+}
+
+export interface IUserUpdate {
+  id: string;
+  email?: string;
+  name?: string;
+  password?: string;
+  role?: UserRole;
 }
 
 export interface IProduct {
