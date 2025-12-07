@@ -1,5 +1,5 @@
 import { parse } from 'ts-command-line-args';
-import type { SubCommandArguments } from './sub-command-arguments/index.js';
+import {type ReplArguments, ReplArgumentsConfig, type SubCommandArguments} from './sub-command-arguments/index.js';
 import Commands from './commands.js';
 import {
   type CreateUserArguments,
@@ -93,6 +93,11 @@ export function parseArgs(cliArgs: string[]): {
       break;
     case Commands.EditUser:
       args = parse<EditUserArguments>(EditUserArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.Repl:
+      args = parse<ReplArguments>(ReplArgumentsConfig, {
         argv: rawCommandArguments,
       });
       break;

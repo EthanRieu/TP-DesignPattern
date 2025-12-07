@@ -1,35 +1,32 @@
 import * as readline from "node:readline";
-import {AuthService} from "../features/auth/AuthService.js";
-import {HomeState} from "./HomeState.js";
-import {ExitState} from "./ExitState.js";
-import {questionAsync} from "./utils.js";
-import type {State} from "./state.js";
+import {HomeState, ExitState} from "./states/index.js";
+import type {State} from "./State.js";
 
 export async function replLoop() {
+  const exitMessage = "Exiting... Thank you for using our ordering application\n\n";
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   });
 
-  rl.write("Welcome to the ordering app!\n");
-  rl.write("Please login before continuing.\n");
+  rl.on("SIGINT", async () => {
+    rl.write("\n\nExit requested.\n");
+    rl.write(exitMessage);
+    process.exit(0);
+  })
 
-
-  do {
-    const name = await questionAsync(rl, "User name: ");
-    const password = await questionAsync(rl, "Password: ");
-
-    // TODO: change this to something like this: if (AuthService.auth(name, password)) { break; }
-    break;
-
-    console.log("Invalid credentials");
-  } while (true)
-
-  console.clear();
-
+  // Utilisation du pattern "State":
+  // A chaque itération, l'instance de state actuelle va retourner une
+  // nouvelle State qui déterminera l'état actuel de l'application
+  // Chaque state utilise aussi le pattern Singleton pour ne pas
+  // pouvoir en créer plusieurs instances.
   let state: State = HomeState.instance;
-
   do {
+    console.clear();
     state = await state.printAndRead(rl);
   } while (!(state instanceof ExitState))
+
+  rl.write("\n");
+  rl.write(exitMessage);
 }

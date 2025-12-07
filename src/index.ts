@@ -12,9 +12,6 @@ import type {
 } from './cli/sub-command-arguments/users.js';
 import type { IUserUpdate } from './types/index.js';
 
-await replLoop();
-process.exit(0);
-
 const message: string = 'Hello TypeScript 🔁';
 console.log(message);
 console.log(parseArgs(process.argv));
@@ -82,6 +79,10 @@ async function main() {
       const { id } = commandArgs as DeleteUserArguments;
       await authService.deleteUser(id);
       break;
+    }
+    case Commands.Repl: {
+      await replLoop();
+      process.exit(0);
     }
     default:
       console.error(`Commande non prise en charge: ${command}`);

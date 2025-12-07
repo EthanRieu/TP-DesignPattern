@@ -8,6 +8,7 @@ enum Command {
   DeleteUser = "delete-user",
   Login = "login",
   Logout = "logout",
+  Repl = "repl",
   /** ProductService commands **/
   /** OrderService commands **/
   /** CartService commands **/
