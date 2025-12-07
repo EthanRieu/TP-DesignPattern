@@ -6,31 +6,34 @@ import { SessionService } from './SessionService.js';
 import { UserFactory } from './UserFactory.js';
 
 export class AuthService {
-  private static instance: AuthService | null = null;
-
-  private constructor() {}
-
-  public static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService();
+  private static singleInstance: AuthService | null = null;
+  public static get instance(): AuthService {
+    if (!AuthService.singleInstance) {
+      AuthService.singleInstance = new AuthService();
       console.log('✅ AuthService instance created');
     }
-    return AuthService.instance;
+    return AuthService.singleInstance;
   }
 
-  public static async getUsers(): Promise<User[]> {
+  private sessionService: SessionService;
+
+  private constructor() {
+    this.sessionService = SessionService.instance;
+  }
+
+  public async getUsers(): Promise<User[]> {
     const prisma = PrismaClientSingleton.getInstance();
     return prisma.user.findMany();
   }
 
-  public static async getUserById(id: string): Promise<User | null> {
+  public async getUserById(id: string): Promise<User | null> {
     const prisma = PrismaClientSingleton.getInstance();
     return prisma.user.findUnique({
       where: { id },
     });
   }
 
-  public static async createUser(user: IUserCreate): Promise<User> {
+  public async createUser(user: IUserCreate): Promise<User> {
     try {
       return await UserFactory.createUser(user);
     } catch (error) {
@@ -39,7 +42,7 @@ export class AuthService {
     }
   }
 
-  public static async updateUser(userUpdate: IUserUpdate): Promise<User> {
+  public async updateUser(userUpdate: IUserUpdate): Promise<User> {
     const prisma = PrismaClientSingleton.getInstance();
     try {
       // Récupérer l'utilisateur existant
@@ -80,7 +83,7 @@ export class AuthService {
     }
   }
 
-  public static async deleteUser(id: string): Promise<void> {
+  public async deleteUser(id: string): Promise<void> {
     const prisma = PrismaClientSingleton.getInstance();
     try {
       await prisma.user.delete({
@@ -93,7 +96,7 @@ export class AuthService {
     }
   }
 
-  public static async login(
+  public async login(
     email: string,
     password: string,
   ): Promise<User | null> {
@@ -108,13 +111,13 @@ export class AuthService {
       throw new Error('Invalid password');
     }
     // Sauvegarder la session
-    SessionService.saveSession(user.email, user.id);
+    this.sessionService.saveSession(user.email, user.id);
     console.log(`✅ User ${user.email} logged in successfully`);
     return user;
   }
 
-  public static async logout(email: string): Promise<void> {
-    const session = SessionService.getSession();
+  public async logout(email: string): Promise<void> {
+    const session = this.sessionService.getSession();
     if (!session) {
       throw new Error('No active session found');
     }
@@ -122,7 +125,7 @@ export class AuthService {
       throw new Error('Session email does not match');
     }
     // Supprimer la session
-    SessionService.deleteSession();
+    this.sessionService.deleteSession();
     console.log(`✅ User ${email} logged out successfully`);
   }
 }

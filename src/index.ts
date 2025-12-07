@@ -16,36 +16,38 @@ console.log(message);
 console.log(parseArgs(process.argv));
 
 async function main() {
+  const authService = AuthService.instance;
+
   const { command, arguments: commandArgs } = parseArgs(process.argv);
 
   switch (command) {
     /** AuthService commands **/
     case Commands.GetUsers: {
-      const users = await AuthService.getUsers();
+      const users = await authService.getUsers();
       console.log('Users:', users);
       break;
     }
     case Commands.GetUserById: {
       const { id } = commandArgs as GetUserByIdArguments;
-      const user = await AuthService.getUserById(id);
+      const user = await authService.getUserById(id);
       console.log('User:', user);
       break;
     }
     case Commands.Login: {
       const { email, password } = commandArgs as LoginArguments;
-      const user = await AuthService.login(email, password);
+      const user = await authService.login(email, password);
       console.log('User:', user);
       break;
     }
     case Commands.Logout: {
       const { email } = commandArgs as LogoutArguments;
-      await AuthService.logout(email);
+      await authService.logout(email);
       break;
     }
     case Commands.CreateUser: {
       const { email, name, password, role } =
         commandArgs as CreateUserArguments;
-      const user = await AuthService.createUser({
+      const user = await authService.createUser({
         email,
         name,
         password,
@@ -68,13 +70,13 @@ async function main() {
       if (password !== undefined) updateData.password = password;
       if (role !== undefined) updateData.role = role;
 
-      const user = await AuthService.updateUser(updateData);
+      const user = await authService.updateUser(updateData);
       console.log('User:', user);
       break;
     }
     case Commands.DeleteUser: {
       const { id } = commandArgs as DeleteUserArguments;
-      await AuthService.deleteUser(id);
+      await authService.deleteUser(id);
       break;
     }
     default:

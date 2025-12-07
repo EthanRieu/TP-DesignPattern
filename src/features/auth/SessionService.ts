@@ -13,7 +13,17 @@ export interface SessionData {
 }
 
 export class SessionService {
-  public static saveSession(email: string, userId: string): void {
+  private static singleInstance: SessionService | null = null;
+
+  public static get instance(): SessionService {
+    if (!SessionService.singleInstance) {
+      SessionService.singleInstance = new SessionService();
+      console.log('✅ SessionService instance created');
+    }
+    return SessionService.singleInstance;
+  }
+
+  public saveSession(email: string, userId: string): void {
     const sessionData: SessionData = {
       email,
       userId,
@@ -22,7 +32,7 @@ export class SessionService {
     fs.writeFileSync(SESSION_FILE, JSON.stringify(sessionData, null, 2));
   }
 
-  public static getSession(): SessionData | null {
+  public getSession(): SessionData | null {
     try {
       if (fs.existsSync(SESSION_FILE)) {
         const data = fs.readFileSync(SESSION_FILE, 'utf-8');
@@ -34,7 +44,7 @@ export class SessionService {
     }
   }
 
-  public static deleteSession(): void {
+  public deleteSession(): void {
     try {
       if (fs.existsSync(SESSION_FILE)) {
         fs.unlinkSync(SESSION_FILE);
@@ -44,7 +54,7 @@ export class SessionService {
     }
   }
 
-  public static isLoggedIn(): boolean {
+  public isLoggedIn(): boolean {
     return this.getSession() !== null;
   }
 }
