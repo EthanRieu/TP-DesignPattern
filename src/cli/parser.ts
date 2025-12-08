@@ -18,6 +18,20 @@ import {
   EditUserArgumentsConfig,
 } from './sub-command-arguments/users.js';
 import {
+  type GetProductsArguments,
+  GetProductsArgumentsConfig,
+  type GetFilteredProductsArguments,
+  GetFilteredProductsArgumentsConfig,
+  type GetProductByIdArguments,
+  GetProductByIdArgumentsConfig,
+  type CreateProductArguments,
+  CreateProductArgumentsConfig,
+  type UpdateProductArguments,
+  UpdateProductArgumentsConfig,
+  type DeleteProductArguments,
+  DeleteProductArgumentsConfig,
+} from './sub-command-arguments/catalog.js';
+import {
   type GetOrdersArguments,
   GetOrdersArgumentsConfig,
 } from './sub-command-arguments/orders.js';
@@ -93,6 +107,38 @@ export function parseArgs(cliArgs: string[]): {
       break;
     case Commands.EditUser:
       args = parse<EditUserArguments>(EditUserArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+
+    // Case Catalog
+    case Commands.GetProducts:
+      args = parse<GetProductsArguments>(GetProductsArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.GetProductById:
+      args = parse<GetProductByIdArguments>(GetProductByIdArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.GetFilteredProducts:
+      args = parse<GetFilteredProductsArguments>(GetFilteredProductsArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.CreateProduct:
+      args = parse<CreateProductArguments>(CreateProductArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.UpdateProduct:
+      args = parse<UpdateProductArguments>(UpdateProductArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.DeleteProduct:
+      args = parse<DeleteProductArguments>(DeleteProductArgumentsConfig, {
         argv: rawCommandArguments,
       });
       break;
