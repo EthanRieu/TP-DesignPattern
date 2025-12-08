@@ -1,9 +1,14 @@
-import type {State} from "../../State.js";
+import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
-import {AuthService} from "../../../features/auth/AuthService.js";
-import {consoleTable, readChar, singleCharQuestion} from "../../utils.js";
-import {AccountState} from "../index.js";
-import {SessionService} from "../../../features/auth/SessionService.js";
+import {AuthService} from "../../../../features/auth/AuthService.js";
+import {consoleTable, readChar, singleCharQuestion} from "../../../utils.js";
+import {
+  AccountMyOrdersDeleteState,
+  AccountMyOrdersEditState,
+  AccountMyOrdersGetState,
+  AccountState
+} from "../../index.js";
+import {SessionService} from "../../../../features/auth/SessionService.js";
 
 export class AccountMyOrdersState implements State {
   public static instance: AccountMyOrdersState = new AccountMyOrdersState();
@@ -20,7 +25,7 @@ export class AccountMyOrdersState implements State {
     if (!this.sessionService.isLoggedIn()) {
       rl.write("You need to be logged in before accessing your orders.\n\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar();
       return AccountState.instance;
     }
 
@@ -45,8 +50,8 @@ export class AccountMyOrdersState implements State {
     consoleTable(orders, "id");
 
     rl.write("1 - Get order details\n");
-    rl.write("2 - Delete order\n");
-    rl.write("3 - Edit order\n");
+    rl.write("2 - Edit order\n");
+    rl.write("3 - Delete order\n");
     rl.write("4 - Back to account page\n\n");
 
     if (this.isInvalidChoice) {
@@ -54,16 +59,16 @@ export class AccountMyOrdersState implements State {
       this.isInvalidChoice = false;
     }
 
-    const choice = singleCharQuestion(rl, "Choice: ");
+    const choice = await singleCharQuestion(rl, "Choice: ");
 
     // TODO: Implémenter les states
     switch (choice) {
       case "1":
-        return AccountMyOrdersState.instance;
+        return AccountMyOrdersGetState.instance;
       case "2":
-        return AccountMyOrdersState.instance;
+        return AccountMyOrdersEditState.instance;
       case "3":
-        return AccountMyOrdersState.instance;
+        return AccountMyOrdersDeleteState.instance;
       case "4":
         return AccountState.instance;
       default:

@@ -34,7 +34,7 @@ export class AccountState implements State {
       this.isInvalidChoice = false;
     }
 
-    const choice = singleCharQuestion(rl, "Choice: ");
+    const choice = await singleCharQuestion(rl, "Choice: ");
 
     switch (choice) {
       case "1":

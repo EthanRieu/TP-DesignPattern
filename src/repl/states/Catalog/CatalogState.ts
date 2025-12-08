@@ -10,7 +10,7 @@ export class CatalogState implements State {
 
   async printAndRead(rl: Interface): Promise<State> {
     rl.write("TODO\n");
-    readChar();
+    await readChar();
     return HomeState.instance;
   }
 }

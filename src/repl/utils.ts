@@ -7,17 +7,30 @@ export async function questionAsync(rl: Interface, query: string): Promise<strin
   return await new Promise(resolve => rl.question(query, resolve))
 }
 
-export function singleCharQuestion(rl: Interface, query: string): string {
+export async function singleCharQuestion(rl: Interface, query: string): Promise<string> {
   rl.write(query);
-  let buffer = Buffer.alloc(1)
-  readSync(process.stdin.fd, buffer, 0, 1, null)
-  return buffer.toString('utf8')
+  return await readChar();
 }
 
-export function readChar(): string {
-  let buffer = Buffer.alloc(1)
-  readSync(process.stdin.fd, buffer, 0, 1, null)
-  return buffer.toString('utf8')
+export async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export async function  readChar(): Promise<string> {
+  let character = "";
+
+  const characterReader = (data: string) => {
+    character += data;
+  };
+
+  // Hook into process.stdin data event, get a single character, deregister the hook and return the character
+  process.stdin.addListener("data", characterReader);
+  while (character === "") {
+    await delay(100);
+  }
+  process.stdin.removeListener("data", characterReader);
+
+  return character;
 }
 
 // Hackish way to get a table with the first '(index)' column removed

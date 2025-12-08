@@ -20,7 +20,7 @@ export class AccountCreateState implements State {
     if (this.sessionService.isLoggedIn()) {
       rl.write("Please log out before creating a new Account\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar();
       return AccountState.instance;
     }
 
@@ -68,7 +68,7 @@ export class AccountCreateState implements State {
     }
 
     rl.write("Press anything to go back to the Account page.\n");
-    readChar();
+    await readChar();
     return AccountState.instance;
   }
 

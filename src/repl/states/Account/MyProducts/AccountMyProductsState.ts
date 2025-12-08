@@ -1,9 +1,12 @@
-import type {State} from "../../State.js";
+import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
-import {AuthService} from "../../../features/auth/AuthService.js";
-import {consoleTable, readChar, singleCharQuestion} from "../../utils.js";
-import {AccountCreateState, AccountMyOrdersState, AccountSignInOutState, AccountState, HomeState} from "../index.js";
-import {SessionService} from "../../../features/auth/SessionService.js";
+import {AuthService} from "../../../../features/auth/AuthService.js";
+import {consoleTable, readChar, singleCharQuestion} from "../../../utils.js";
+import {
+  AccountCreateState, AccountMyOrdersState, AccountMyProductsDeleteState, AccountMyProductsEditState,
+  AccountMyProductsGetState, AccountSignInOutState, AccountState, HomeState
+} from "../../index.js";
+import {SessionService} from "../../../../features/auth/SessionService.js";
 
 export class AccountMyProductsState implements State {
   public static instance: AccountMyProductsState = new AccountMyProductsState();
@@ -20,7 +23,7 @@ export class AccountMyProductsState implements State {
     if (!this.sessionService.isLoggedIn()) {
       rl.write("You need to be logged in before accessing your products.\n\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar();
       return AccountState.instance;
     }
 
@@ -43,8 +46,8 @@ export class AccountMyProductsState implements State {
     consoleTable(products, "name");
 
     rl.write("1 - Get product details\n");
-    rl.write("2 - Delete product\n");
-    rl.write("3 - Edit product\n");
+    rl.write("2 - Edit product\n");
+    rl.write("3 - Delete product\n");
     rl.write("4 - Back to account page\n\n");
 
     if (this.isInvalidChoice) {
@@ -52,16 +55,16 @@ export class AccountMyProductsState implements State {
       this.isInvalidChoice = false;
     }
 
-    const choice = singleCharQuestion(rl, "Choice: ");
+    const choice = await singleCharQuestion(rl, "Choice: ");
 
     // TODO: Implémenter les states
     switch (choice) {
       case "1":
-        return AccountMyProductsState.instance;
+        return AccountMyProductsGetState.instance;
       case "2":
-        return AccountMyProductsState.instance;
+        return AccountMyProductsEditState.instance;
       case "3":
-        return AccountMyProductsState.instance;
+        return AccountMyProductsDeleteState.instance;
       case "4":
         return AccountState.instance;
       default:
