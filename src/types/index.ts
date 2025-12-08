@@ -34,9 +34,27 @@ export interface IUserUpdate {
 export interface IProduct {
   id: string;
   name: string;
+  description: string;
   price: number;
   stock: number;
   category: ProductCategory;
+}
+
+export interface IProductCreate {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  category: ProductCategory;
+}
+
+export interface IProductUpdate {
+  id: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  category?: ProductCategory;
 }
 
 export interface IOrder {

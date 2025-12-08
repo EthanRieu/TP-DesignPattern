@@ -19,7 +19,7 @@ export class CartState implements State {
     if (!this.sessionService.isLoggedIn()) {
       rl.write("You need to be logged in before accessing your cart.\n\n");
       rl.write("Press anything to continue to the Account page.\n");
-      readChar();
+      await readChar(rl);
       return AccountState.instance;
     }
 
@@ -27,7 +27,7 @@ export class CartState implements State {
     if (!session) {
       rl.write("Error: Couldn't retrieve authentication session.\n\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar(rl);
       return AccountState.instance;
     }
 
@@ -35,19 +35,19 @@ export class CartState implements State {
     if (!user) {
       rl.write("Error: Couldn't retrieve user.\n\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar(rl);
       return AccountState.instance;
     }
 
     if (user.role !== "CUSTOMER") {
       rl.write("Only customers are able to interact with their cart.\n\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar(rl);
       return AccountState.instance;
     }
 
     rl.write("TODO\n");
-    readChar();
+    await readChar(rl);
 
     return AccountState.instance;
   }

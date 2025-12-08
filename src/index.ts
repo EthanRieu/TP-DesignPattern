@@ -1,4 +1,5 @@
 import { AuthService } from './features/auth/AuthService.js';
+import { ProductService } from './features/catalog/ProductService.js';
 import { parseArgs } from './cli/index.js';
 import { replLoop } from './repl/repl.js';
 import Commands from './cli/commands.js';
@@ -11,6 +12,7 @@ import type {
   EditUserArguments,
 } from './cli/sub-command-arguments/users.js';
 import type { IUserUpdate } from './types/index.js';
+import type { CreateProductArguments, DeleteProductArguments, GetFilteredProductsArguments, GetProductByIdArguments, UpdateProductArguments } from './cli/sub-command-arguments/catalog.js';
 
 const message: string = 'Hello TypeScript 🔁';
 console.log(message);
@@ -18,6 +20,7 @@ console.log(parseArgs(process.argv));
 
 async function main() {
   const authService = AuthService.instance;
+  const productService = ProductService.instance;
 
   const { command, arguments: commandArgs } = parseArgs(process.argv);
 
@@ -83,6 +86,63 @@ async function main() {
     case Commands.Repl: {
       await replLoop();
       process.exit(0);
+    }
+
+    //Catalog Commands
+    case Commands.GetProducts: {
+      const products = await productService.getAllProducts();
+      console.log('Products:', products);
+      break;
+    }
+
+    case Commands.GetProductById: {
+      const { id } = commandArgs as GetProductByIdArguments;
+      const product = await productService.getProductById(id);
+      console.log('Product:', product);
+      break;
+    }
+
+    case Commands.GetFilteredProducts: {
+      const { category } = commandArgs as GetFilteredProductsArguments;
+      const products = await productService.getFilteredProducts(category);
+      console.log('Products:', products);
+      break;
+    }
+
+    case Commands.CreateProduct: {
+      const { name, description, price, stock, category } =
+        commandArgs as CreateProductArguments;
+      const product = await productService.createProduct({
+        name,
+        description,
+        price,
+        stock,
+        category,
+      });
+      console.log('Product:', product);
+      break;
+    }
+
+    case Commands.UpdateProduct: {
+      const { id, name, description, price, stock, category } =
+        commandArgs as UpdateProductArguments;
+
+      const data: any = {};
+      if (name !== undefined) data.name = name;
+      if (description !== undefined) data.description = description;
+      if (price !== undefined) data.price = price;
+      if (stock !== undefined) data.stock = stock;
+      if (category !== undefined) data.category = category;
+
+      const product = await productService.updateProduct(id, data);
+      console.log('Product:', product);
+      break;
+    }
+    case Commands.DeleteProduct: {
+      const { id } = commandArgs as DeleteProductArguments;
+      const product = await productService.deleteProduct(id);
+      console.log('Product:', product);
+      break;
     }
     default:
       console.error(`Commande non prise en charge: ${command}`);
