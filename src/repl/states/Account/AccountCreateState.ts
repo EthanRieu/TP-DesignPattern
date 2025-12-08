@@ -1,7 +1,8 @@
 import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
-import {emailRegex, questionAsync, readChar} from "../../utils.js";
+import {questionAsync, readChar} from "../../utils.js";
+import {emailRegex} from "./utils.js";
 import {AccountState} from "../index.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 import type {UserRole} from "../../../types/index.js";

@@ -1,7 +1,4 @@
 import type {Interface} from "node:readline";
-import {readSync} from "node:fs"
-
-export const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
 export async function questionAsync(rl: Interface, query: string): Promise<string> {
   return await new Promise(resolve => rl.question(query, resolve))
@@ -16,7 +13,7 @@ export async function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-export async function  readChar(): Promise<string> {
+export async function readChar(): Promise<string> {
   let character = "";
 
   const characterReader = (data: string) => {

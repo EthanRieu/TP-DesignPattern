@@ -1,12 +1,15 @@
 import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../../features/auth/AuthService.js";
-import {consoleTable, readChar, singleCharQuestion} from "../../../utils.js";
+import {consoleTable, readChar} from "../../../utils.js";
 import {
   AccountMyOrdersDeleteState,
   AccountMyOrdersEditState,
   AccountMyOrdersGetState,
-  AccountState
+  AccountState,
+  type Choice,
+  defaultErrorMessage,
+  promptForChoices
 } from "../../index.js";
 import {SessionService} from "../../../../features/auth/SessionService.js";
 
@@ -49,31 +52,31 @@ export class AccountMyOrdersState implements State {
 
     consoleTable(orders, "id");
 
-    rl.write("1 - Get order details\n");
-    rl.write("2 - Edit order\n");
-    rl.write("3 - Delete order\n");
-    rl.write("4 - Back to account page\n\n");
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Get order details',
+        state: AccountMyOrdersGetState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: 'Edit order',
+        state: AccountMyOrdersEditState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'Delete order',
+        state: AccountMyOrdersDeleteState.instance
+      },
+      {
+        choiceCharacter: '4',
+        description: 'Back to account page',
+        state: AccountState.instance
+      },
+    ];
 
-    if (this.isInvalidChoice) {
-      rl.write("Invalid choice, pick from the options above.\n\n");
-      this.isInvalidChoice = false;
-    }
-
-    const choice = await singleCharQuestion(rl, "Choice: ");
-
-    // TODO: Implémenter les states
-    switch (choice) {
-      case "1":
-        return AccountMyOrdersGetState.instance;
-      case "2":
-        return AccountMyOrdersEditState.instance;
-      case "3":
-        return AccountMyOrdersDeleteState.instance;
-      case "4":
-        return AccountState.instance;
-      default:
-        this.isInvalidChoice = true;
-        return AccountMyOrdersState.instance;
-    }
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : AccountMyOrdersState.instance;
   }
 }

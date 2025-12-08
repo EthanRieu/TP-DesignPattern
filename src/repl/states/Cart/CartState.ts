@@ -1,13 +1,20 @@
 import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
-import {AccountState, HomeState} from "../index.js";
+import {
+  AccountState,
+  CartPaymentState,
+  type Choice,
+  defaultErrorMessage, HomeState,
+  promptForChoices
+} from "../index.js";
 import {readChar} from "../../utils.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 
 export class CartState implements State {
   public static instance: CartState = new CartState();
 
+  private isInvalidChoice = false;
   private authService: AuthService;
   private sessionService: SessionService;
   private constructor() {
@@ -46,9 +53,25 @@ export class CartState implements State {
       return AccountState.instance;
     }
 
-    rl.write("TODO: print cart and ask for payment choice\n");
-    await readChar();
+    rl.write("Cart page:\n");
 
-    return AccountState.instance;
+    rl.write("TODO: print cart\n")
+
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Continue to payment',
+        state: CartPaymentState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: 'Go back to home',
+        state: HomeState.instance
+      },
+    ];
+
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : CartState.instance;
   }
 }

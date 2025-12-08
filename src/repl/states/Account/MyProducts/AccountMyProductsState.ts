@@ -1,10 +1,16 @@
 import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../../features/auth/AuthService.js";
-import {consoleTable, readChar, singleCharQuestion} from "../../../utils.js";
+import {consoleTable, readChar} from "../../../utils.js";
 import {
-  AccountCreateState, AccountMyOrdersState, AccountMyProductsDeleteState, AccountMyProductsEditState,
-  AccountMyProductsGetState, AccountSignInOutState, AccountState, HomeState
+  AccountMyProductsDeleteState,
+  AccountMyProductsEditState,
+  AccountMyProductsGetState,
+  AccountState,
+  type Choice,
+  defaultErrorMessage,
+  HomeState,
+  promptForChoices
 } from "../../index.js";
 import {SessionService} from "../../../../features/auth/SessionService.js";
 
@@ -45,31 +51,31 @@ export class AccountMyProductsState implements State {
 
     consoleTable(products, "name");
 
-    rl.write("1 - Get product details\n");
-    rl.write("2 - Edit product\n");
-    rl.write("3 - Delete product\n");
-    rl.write("4 - Back to account page\n\n");
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Get product details',
+        state: AccountMyProductsGetState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: 'Edit product',
+        state: AccountMyProductsEditState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'Delete product',
+        state: AccountMyProductsDeleteState.instance
+      },
+      {
+        choiceCharacter: '4',
+        description: 'Back to account page',
+        state: AccountState.instance
+      },
+    ];
 
-    if (this.isInvalidChoice) {
-      rl.write("Invalid choice, pick from the options above.\n\n");
-      this.isInvalidChoice = false;
-    }
-
-    const choice = await singleCharQuestion(rl, "Choice: ");
-
-    // TODO: Implémenter les states
-    switch (choice) {
-      case "1":
-        return AccountMyProductsGetState.instance;
-      case "2":
-        return AccountMyProductsEditState.instance;
-      case "3":
-        return AccountMyProductsDeleteState.instance;
-      case "4":
-        return AccountState.instance;
-      default:
-        this.isInvalidChoice = true;
-        return AccountMyProductsState.instance;
-    }
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : AccountMyProductsState.instance;
   }
 }

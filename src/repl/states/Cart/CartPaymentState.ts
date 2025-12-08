@@ -2,11 +2,14 @@ import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
 import {
-  AccountMyProductsDeleteState,
-  AccountMyProductsEditState, AccountMyProductsGetState, AccountState, CartPaymentCreditState,
-  CartPaymentPayPalState, CartState, HomeState
+  CartPaymentCreditState,
+  CartPaymentPayPalState,
+  CartState,
+  type Choice,
+  defaultErrorMessage,
+  promptForChoices
 } from "../index.js";
-import {readChar, singleCharQuestion} from "../../utils.js";
+import {readChar} from "../../utils.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 
 export class CartPaymentState implements State {
@@ -39,29 +42,27 @@ export class CartPaymentState implements State {
 
     rl.write("Cart payment page:\n\n");
 
-    rl.write("Choose payment method:\n");
-    rl.write("1 - Credit card\n");
-    rl.write("2 - PayPal\n");
-    rl.write("3 - Go back to cart\n\n");
+    rl.write("Choose your payment method:\n");
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Credit card',
+        state: CartPaymentCreditState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: `PayPal`,
+        state: CartPaymentPayPalState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'Go back to cart',
+        state: CartState.instance
+      },
+    ];
 
-    if (this.isInvalidChoice) {
-      rl.write("Invalid choice, pick from the options above.\n\n");
-      this.isInvalidChoice = false;
-    }
-
-    const choice = await singleCharQuestion(rl, "Choice: ");
-
-    // TODO: Implémenter les states
-    switch (choice) {
-      case "1":
-        return CartPaymentCreditState.instance;
-      case "2":
-        return CartPaymentPayPalState.instance;
-      case "3":
-        return CartState.instance;
-      default:
-        this.isInvalidChoice = true;
-        return CartPaymentState.instance;
-    }
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : CartPaymentState.instance;
   }
 }

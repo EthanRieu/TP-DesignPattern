@@ -1,8 +1,14 @@
 import type {State} from "../State.js";
 import type {Interface} from "node:readline";
-import {questionAsync, singleCharQuestion} from "../utils.js";
 import {ExitState} from "./ExitState.js";
-import {AccountState, CartState, CatalogState} from "./index.js";
+import {
+  AccountState,
+  CartState,
+  CatalogState,
+  type Choice,
+  defaultErrorMessage,
+  promptForChoices
+} from "./index.js";
 
 export class HomeState implements State {
   public static instance: HomeState = new HomeState();
@@ -17,30 +23,31 @@ export class HomeState implements State {
     }
 
     rl.write("Home page: \n");
-    rl.write("1 - Account\n");
-    rl.write("2 - Cart\n");
-    rl.write("3 - Catalog\n");
-    rl.write("4 - Exit\n\n");
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Account',
+        state: AccountState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: 'Cart',
+        state: CartState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'Catalog',
+        state: CatalogState.instance
+      },
+      {
+        choiceCharacter: '4',
+        description: 'Exit',
+        state: ExitState.instance
+      },
+    ];
 
-    if (this.isInvalidChoice) {
-      rl.write("Invalid choice, pick from the options above.\n\n");
-      this.isInvalidChoice = false;
-    }
-
-    const choice = await singleCharQuestion(rl, "Choice: ");
-
-    switch (choice) {
-      case "1":
-        return AccountState.instance;
-      case "2":
-        return CartState.instance;
-      case "3":
-        return CatalogState.instance;
-      case "4":
-        return ExitState.instance;
-      default:
-        this.isInvalidChoice = true;
-        return HomeState.instance;
-    }
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : HomeState.instance;
   }
 }

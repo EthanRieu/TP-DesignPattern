@@ -10,7 +10,7 @@ export class AccountMyProductsGetState implements State {
   private constructor() {}
 
   async printAndRead(rl: Interface): Promise<State> {
-    rl.write("Product edit page: \n")
+    rl.write("Product details page: \n")
 
     const productOrCancel = await getProductByIdOrCancelAsync(rl);
     if (!productOrCancel) {

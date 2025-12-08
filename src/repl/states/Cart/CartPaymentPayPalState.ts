@@ -2,7 +2,7 @@ import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
 import {delay, readChar} from "../../utils.js";
-import {AccountState} from "../index.js";
+import {HomeState} from "../index.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 
 export class CartPaymentPayPalState implements State {
@@ -22,8 +22,8 @@ export class CartPaymentPayPalState implements State {
     rl.write("Payment was successful!\n");
     rl.write("TODO: empty cart\n");
 
-    rl.write("Press anything to go back to the account page.\n");
+    rl.write("Press anything to go back to the home page.\n");
     await readChar();
-    return AccountState.instance;
+    return HomeState.instance;
   }
 }

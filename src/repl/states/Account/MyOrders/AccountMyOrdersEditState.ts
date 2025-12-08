@@ -1,6 +1,5 @@
 import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
-import {readChar} from "../../../utils.js";
 import {AccountMyOrdersState} from "./AccountMyOrdersState.js";
 import {getOrderByIdOrCancelAsync} from "./utils.js";
 
