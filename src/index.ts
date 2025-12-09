@@ -13,10 +13,7 @@ import type {
 } from './cli/sub-command-arguments/users.js';
 import type { IUserUpdate } from './types/index.js';
 import type { CreateProductArguments, DeleteProductArguments, GetFilteredProductsArguments, GetProductByIdArguments, UpdateProductArguments } from './cli/sub-command-arguments/catalog.js';
-
-const message: string = 'Hello TypeScript 🔁';
-console.log(message);
-console.log(parseArgs(process.argv));
+import { AppLogger } from "./AppLogger.js";
 
 async function main() {
   const authService = AuthService.instance;
@@ -28,19 +25,19 @@ async function main() {
     /** AuthService commands **/
     case Commands.GetUsers: {
       const users = await authService.getUsers();
-      console.log('Users:', users);
+      AppLogger.info('Users:', users);
       break;
     }
     case Commands.GetUserById: {
       const { id } = commandArgs as GetUserByIdArguments;
       const user = await authService.getUserById(id);
-      console.log('User:', user);
+      AppLogger.info('User:', user);
       break;
     }
     case Commands.Login: {
       const { email, password } = commandArgs as LoginArguments;
       const user = await authService.login(email, password);
-      console.log('User:', user);
+      AppLogger.info('User:', user);
       break;
     }
     case Commands.Logout: {
@@ -57,14 +54,14 @@ async function main() {
         password,
         role,
       });
-      console.log('User:', user);
+      AppLogger.info('User:', user);
       break;
     }
     case Commands.EditUser: {
       const { id, email, name, password, role } =
         commandArgs as EditUserArguments;
       if (!id) {
-        console.error('❌ Error: id is required for edit-user command');
+        AppLogger.error('❌ Error: id is required for edit-user command');
         process.exitCode = 1;
         break;
       }
@@ -75,7 +72,7 @@ async function main() {
       if (role !== undefined) updateData.role = role;
 
       const user = await authService.updateUser(updateData);
-      console.log('User:', user);
+      AppLogger.info('User:', user);
       break;
     }
     case Commands.DeleteUser: {
@@ -84,6 +81,7 @@ async function main() {
       break;
     }
     case Commands.Repl: {
+      AppLogger.reinitializeLogger("file");
       await replLoop();
       process.exit(0);
     }
@@ -91,21 +89,21 @@ async function main() {
     //Catalog Commands
     case Commands.GetProducts: {
       const products = await productService.getAllProducts();
-      console.log('Products:', products);
+      AppLogger.info('Products:', products);
       break;
     }
 
     case Commands.GetProductById: {
       const { id } = commandArgs as GetProductByIdArguments;
       const product = await productService.getProductById(id);
-      console.log('Product:', product);
+      AppLogger.info('Product:', product);
       break;
     }
 
     case Commands.GetFilteredProducts: {
       const { category } = commandArgs as GetFilteredProductsArguments;
       const products = await productService.getFilteredProducts(category);
-      console.log('Products:', products);
+      AppLogger.info('Products:', products);
       break;
     }
 
@@ -119,7 +117,7 @@ async function main() {
         stock,
         category,
       });
-      console.log('Product:', product);
+      AppLogger.info('Product:', product);
       break;
     }
 
@@ -135,17 +133,17 @@ async function main() {
       if (category !== undefined) data.category = category;
 
       const product = await productService.updateProduct(id, data);
-      console.log('Product:', product);
+      AppLogger.info('Product:', product);
       break;
     }
     case Commands.DeleteProduct: {
       const { id } = commandArgs as DeleteProductArguments;
       const product = await productService.deleteProduct(id);
-      console.log('Product:', product);
+      AppLogger.info('Product:', product);
       break;
     }
     default:
-      console.error(`Commande non prise en charge: ${command}`);
+      AppLogger.error(`Commande non prise en charge: ${command}`);
       process.exitCode = 1;
   }
 }

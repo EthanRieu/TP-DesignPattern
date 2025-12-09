@@ -2,6 +2,7 @@ import type { Product } from "@prisma/client";
 import type { ProductCategory } from "../../types/index.js";
 import { PrismaClientSingleton } from "../../prisma/client.js";
 import type { IProductCreate } from "../../types/index.js";
+import { AppLogger } from "../../AppLogger.js";
 
 export class ProductService {
     private static singleInstance: ProductService | null = null;
@@ -20,7 +21,7 @@ export class ProductService {
         const product = await prisma.product.create({
             data: productData,
         });
-        console.log(`✅ ProductService: Created product ${product.name}`);
+        AppLogger.info(`✅ ProductService: Created product ${product.name}`);
         return product;
     }
 
@@ -49,7 +50,7 @@ export class ProductService {
             where: { id },
             data,
         });
-        console.log(`✅ ProductService: Updated product ${product.name}`);
+      AppLogger.info(`✅ ProductService: Updated product ${product.name}`);
         return product;
     }
 
@@ -58,7 +59,7 @@ export class ProductService {
         const product = await prisma.product.delete({
             where: { id },
         });
-        console.log(`✅ ProductService: Deleted product ${product.name}`);
+      AppLogger.info(`✅ ProductService: Deleted product ${product.name}`);
         return product;
     }
 }

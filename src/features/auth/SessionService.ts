@@ -1,6 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { Logger } from "winston";
+import { AppLogger } from "../../AppLogger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,11 +16,12 @@ export interface SessionData {
 
 export class SessionService {
   private static singleInstance: SessionService | null = null;
+  private constructor() {}
 
   public static get instance(): SessionService {
     if (!SessionService.singleInstance) {
       SessionService.singleInstance = new SessionService();
-      console.log('✅ SessionService instance created');
+      AppLogger.debug('✅ SessionService instance created');
     }
     return SessionService.singleInstance;
   }

@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { PrismaClientSingleton } from "./client.js";
+import { AppLogger } from "../AppLogger.js";
 
 const prisma = PrismaClientSingleton.getInstance();
 
@@ -41,7 +42,7 @@ async function main() {
     }
   });
 
-  console.log('✅ Users created');
+  AppLogger.info('✅ Users created');
 
   // Créer des produits
   const products = await Promise.all([
@@ -92,7 +93,7 @@ async function main() {
     })
   ]);
 
-  console.log('✅ Products created');
+  AppLogger.info('✅ Products created');
 
   // Créer une commande exemple
   const order = await prisma.order.create({
@@ -119,21 +120,21 @@ async function main() {
     }
   });
 
-  console.log('✅ Sample order created');
+  AppLogger.info('✅ Sample order created');
 
-  console.log('\n📊 Database seeded with:');
-  console.log(`- ${await prisma.user.count()} users`);
-  console.log(`- ${await prisma.product.count()} products`);
-  console.log(`- ${await prisma.order.count()} orders`);
-  console.log('\n🔑 Test credentials:');
-  console.log('   Client: client@test.com / password123');
-  console.log('   Vendeur: vendeur@test.com / password123');
-  console.log('   Admin: admin@test.com / password123');
+  AppLogger.info('\n📊 Database seeded with:');
+  AppLogger.info(`- ${await prisma.user.count()} users`);
+  AppLogger.info(`- ${await prisma.product.count()} products`);
+  AppLogger.info(`- ${await prisma.order.count()} orders`);
+  AppLogger.info('\n🔑 Test credentials:');
+  AppLogger.info('   Client: client@test.com / password123');
+  AppLogger.info('   Vendeur: vendeur@test.com / password123');
+  AppLogger.info('   Admin: admin@test.com / password123');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    AppLogger.error('❌ Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {

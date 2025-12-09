@@ -1,6 +1,7 @@
 import { configDotenv } from "dotenv";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { AppLogger } from "../AppLogger.js";
 
 configDotenv();
 
@@ -16,10 +17,32 @@ export class PrismaClientSingleton {
       });
 
       PrismaClientSingleton.instance = new PrismaClient({
-        log: ['query', 'info', 'warn', 'error'],
+        log: [
+          {
+            level: "query",
+            emit: "event",
+          },
+          {
+            level: "info",
+            emit: "event",
+          },
+          {
+            level: "warn",
+            emit: "event",
+          },
+          {
+            level: "error",
+            emit: "event",
+          },
+        ],
         adapter: sqliteAdapter,
       });
-      console.log('✅ PrismaClientSingleton instance created');
+      PrismaClientSingleton.instance.$on('query' as never, (e: Prisma.QueryEvent) => {this.eventFileLogger(e, "query")});
+      PrismaClientSingleton.instance.$on('info' as never, (e: Prisma.QueryEvent) => {this.eventFileLogger(e, "info")});
+      PrismaClientSingleton.instance.$on('warn' as never, (e: Prisma.QueryEvent) => {this.eventFileLogger(e, "warn")});
+      PrismaClientSingleton.instance.$on('error' as never, (e: Prisma.QueryEvent) => {this.eventFileLogger(e, "error")});
+
+      AppLogger.info("✅ PrismaClientSingleton instance created");
     }
     return PrismaClientSingleton.instance;
   }
@@ -28,8 +51,25 @@ export class PrismaClientSingleton {
     if (PrismaClientSingleton.instance) {
       await PrismaClientSingleton.instance.$disconnect();
       PrismaClientSingleton.instance = null;
-      console.log('🔌 PrismaClientSingleton instance disconnected');
+      AppLogger.info('🔌 PrismaClientSingleton instance disconnected');
     }
+  }
+
+  private static eventFileLogger(event: Prisma.LogEvent | Prisma.QueryEvent, eventType: "query" | "info" | "warn" | "error") {
+    if (eventType === "query") {
+      const queryEvent = event as Prisma.QueryEvent;
+
+      AppLogger.log("debug", `QUERY:
+      ${queryEvent.query}
+      PARAMS: ${queryEvent.params}
+      TARGET: ${queryEvent.target}
+      DURATION: ${queryEvent.duration}`);
+      return;
+    }
+
+    const logEvent = event as Prisma.LogEvent;
+    AppLogger.log(eventType, `${logEvent.message} - TARGET: ${logEvent.target}`);
+    return;
   }
 }
 
