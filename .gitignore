@@ -8,3 +8,6 @@ node_modules/
 # Base de données SQLite (ne pas versionner)
 *.db
 *.db-journal
+
+# Fichier de log de l'application quand utilisée en mode REPL
+prisma.log
