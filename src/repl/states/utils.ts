@@ -2,7 +2,7 @@ import type {Interface} from "node:readline";
 import type {State} from "../State.js";
 import {singleCharQuestion} from "../utils.js";
 
-export type Choice = { choiceCharacter: string, description: string, state: State }
+export type Choice = { choiceCharacter: string, description: string, state: State, callback?: () => void }
 
 export const defaultErrorMessage = "Invalid choice, pick from the options above.";
 
@@ -24,5 +24,11 @@ export async function promptForChoices(
   }
 
   const choice = await singleCharQuestion(rl, prompt);
-  return choices.find(choiceCandidate => choiceCandidate.choiceCharacter === choice)?.state;
+
+  const foundChoice = choices.find(choiceCandidate => choiceCandidate.choiceCharacter === choice);
+  if (foundChoice?.callback) {
+    foundChoice.callback();
+  }
+
+  return foundChoice?.state;
 }

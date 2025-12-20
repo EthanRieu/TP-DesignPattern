@@ -25,7 +25,7 @@ export class AccountCreateState implements State {
       return AccountState.instance;
     }
 
-    rl.write("Creating an account. Leave the field blank to go back.\n\n")
+    rl.write("Creating an account. Leave any field blank to go back.\n\n")
 
     let email: string;
     while (true) {

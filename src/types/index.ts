@@ -5,7 +5,8 @@ export type OrderStatus =
   | 'SHIPPED'
   | 'DELIVERED'
   | 'CANCELLED';
-export type ProductCategory = 'ELECTRONICS' | 'CLOTHING' | 'FOOD';
+export const ProductCategoriesList = ['ELECTRONICS', 'CLOTHING', 'FOOD'] as const;
+export type ProductCategory = typeof ProductCategoriesList[number];
 export type PaymentMethod = 'CREDIT_CARD' | 'PAYPAL';
 
 export interface IUser {
