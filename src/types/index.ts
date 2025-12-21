@@ -58,7 +58,6 @@ export interface IProductUpdate {
   price?: number;
   stock?: number;
   category?: ProductCategory;
-  userId: string
 }
 
 export interface IOrder {
