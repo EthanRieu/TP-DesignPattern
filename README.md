@@ -10,6 +10,14 @@ cd TP-DesignPattern
 npm i
 ```
 
+### Setup Environment
+
+1. Copier le fichier d'exemple pour créer votre configuration locale :
+```bash
+cp .env.example .env
+```
+Cela configurera automatiquement la `DATABASE_URL` correcte pour Prisma.
+
 ### Prisma Config
 
 1. Générer le client Prisma :

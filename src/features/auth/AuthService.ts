@@ -4,13 +4,14 @@ import type { IUser, IUserCreate, IUserUpdate } from '../../types/index.js';
 import * as bcrypt from 'bcrypt';
 import { SessionService } from './SessionService.js';
 import { UserFactory } from './UserFactory.js';
+import { AppLogger } from "../../AppLogger.js";
 
 export class AuthService {
   private static singleInstance: AuthService | null = null;
   public static get instance(): AuthService {
     if (!AuthService.singleInstance) {
       AuthService.singleInstance = new AuthService();
-      console.log('✅ AuthService instance created');
+      AppLogger.debug('✅ AuthService instance created');
     }
     return AuthService.singleInstance;
   }
@@ -37,7 +38,7 @@ export class AuthService {
     try {
       return await UserFactory.createUser(user);
     } catch (error) {
-      console.error(`❌ Error creating user:`, error);
+      AppLogger.error(`❌ Error creating user:`, error);
       throw error;
     }
   }
@@ -75,10 +76,10 @@ export class AuthService {
         where: { id: userUpdate.id },
         data: updateData,
       });
-      console.log(`✅ User ${updatedUser.email} updated successfully`);
+      AppLogger.info(`✅ User ${updatedUser.email} updated successfully`);
       return updatedUser;
     } catch (error) {
-      console.error(`❌ Error updating user:`, error);
+      AppLogger.error(`❌ Error updating user:`, error);
       throw error;
     }
   }
@@ -89,9 +90,9 @@ export class AuthService {
       await prisma.user.delete({
         where: { id },
       });
-      console.log(`✅ User ${id} deleted successfully`);
+      AppLogger.info(`✅ User ${id} deleted successfully`);
     } catch (error) {
-      console.error(`❌ Error deleting user ${id}:`, error);
+      AppLogger.error(`❌ Error deleting user ${id}:`, error);
       throw error;
     }
   }
@@ -112,7 +113,7 @@ export class AuthService {
     }
     // Sauvegarder la session
     this.sessionService.saveSession(user.email, user.id);
-    console.log(`✅ User ${user.email} logged in successfully`);
+    AppLogger.info(`✅ User ${user.email} logged in successfully`);
     return user;
   }
 
@@ -126,6 +127,6 @@ export class AuthService {
     }
     // Supprimer la session
     this.sessionService.deleteSession();
-    console.log(`✅ User ${email} logged out successfully`);
+    AppLogger.info(`✅ User ${email} logged out successfully`);
   }
 }

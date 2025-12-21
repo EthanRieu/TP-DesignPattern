@@ -1,7 +1,8 @@
 import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
-import {emailRegex, questionAsync, readChar} from "../../utils.js";
+import {questionAsync, readChar} from "../../utils.js";
+import {emailRegex} from "./utils.js";
 import {AccountState} from "../index.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 import type {UserRole} from "../../../types/index.js";
@@ -20,11 +21,11 @@ export class AccountCreateState implements State {
     if (this.sessionService.isLoggedIn()) {
       rl.write("Please log out before creating a new Account\n");
       rl.write("Press anything to go back to the Account page.\n");
-      readChar();
+      await readChar();
       return AccountState.instance;
     }
 
-    rl.write("Creating an account. Leave the field blank to go back.\n\n")
+    rl.write("Creating an account. Leave any field blank to go back.\n\n")
 
     let email: string;
     while (true) {
@@ -68,7 +69,7 @@ export class AccountCreateState implements State {
     }
 
     rl.write("Press anything to go back to the Account page.\n");
-    readChar();
+    await readChar();
     return AccountState.instance;
   }
 

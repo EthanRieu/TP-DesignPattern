@@ -5,7 +5,8 @@ export type OrderStatus =
   | 'SHIPPED'
   | 'DELIVERED'
   | 'CANCELLED';
-export type ProductCategory = 'ELECTRONICS' | 'CLOTHING' | 'FOOD';
+export const ProductCategoriesList = ['ELECTRONICS', 'CLOTHING', 'FOOD'] as const;
+export type ProductCategory = typeof ProductCategoriesList[number];
 export type PaymentMethod = 'CREDIT_CARD' | 'PAYPAL';
 
 export interface IUser {
@@ -34,9 +35,30 @@ export interface IUserUpdate {
 export interface IProduct {
   id: string;
   name: string;
+  description: string;
   price: number;
   stock: number;
   category: ProductCategory;
+  userId: string
+}
+
+export interface IProductCreate {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  category: ProductCategory;
+  userId: string
+}
+
+export interface IProductUpdate {
+  id: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  stock?: number;
+  category?: ProductCategory;
+  userId: string
 }
 
 export interface IOrder {

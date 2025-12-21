@@ -1,23 +1,33 @@
 import type {Interface} from "node:readline";
-import {readSync} from "node:fs"
-
-export const emailRegex = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
 
 export async function questionAsync(rl: Interface, query: string): Promise<string> {
   return await new Promise(resolve => rl.question(query, resolve))
 }
 
-export function singleCharQuestion(rl: Interface, query: string): string {
+export async function singleCharQuestion(rl: Interface, query: string): Promise<string> {
   rl.write(query);
-  let buffer = Buffer.alloc(1)
-  readSync(process.stdin.fd, buffer, 0, 1, null)
-  return buffer.toString('utf8')
+  return await readChar();
 }
 
-export function readChar(): string {
-  let buffer = Buffer.alloc(1)
-  readSync(process.stdin.fd, buffer, 0, 1, null)
-  return buffer.toString('utf8')
+export async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export async function readChar(): Promise<string> {
+  let character = "";
+
+  const characterReader = (data: string) => {
+    character += data;
+  };
+
+  // Hook into process.stdin data event, get a single character, deregister the hook and return the character
+  process.stdin.addListener("data", characterReader);
+  while (character === "") {
+    await delay(100);
+  }
+  process.stdin.removeListener("data", characterReader);
+
+  return character;
 }
 
 // Hackish way to get a table with the first '(index)' column removed
@@ -55,4 +65,12 @@ export function consoleTable(items: any, firstColumnName: string) {
   // Finally, replace the (index) column name with the one we just computed
   tableOutput = tableOutput.replace(indexRegex, computedFirstColumnName);
   console.log(tableOutput);
+}
+
+export function capitalize(str: string) {
+  if (str.length < 2) {
+    return str.toUpperCase();
+  }
+
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

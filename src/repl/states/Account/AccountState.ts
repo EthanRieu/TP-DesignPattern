@@ -1,11 +1,13 @@
 import type {Interface} from "node:readline";
-import {questionAsync, singleCharQuestion} from "../../utils.js";
 import {
   AccountCreateState,
   AccountMyOrdersState,
   AccountMyProductsState,
   AccountSignInOutState,
+  type Choice,
+  defaultErrorMessage,
   HomeState,
+  promptForChoices,
 } from "../index.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 import type {State} from "../../State.js";
@@ -23,33 +25,36 @@ export class AccountState implements State {
     const signInOutText = this.sessionService.isLoggedIn() ? "Sign out" : "Sign in";
 
     rl.write("Account page:\n")
-    rl.write("1 - Create account\n");
-    rl.write(`2 - ${signInOutText}\n`);
-    rl.write("3 - My products\n");
-    rl.write("4 - My orders\n");
-    rl.write("5 - Back to home page\n\n");
+    const choices: Choice[] = [
+      {
+        choiceCharacter: '1',
+        description: 'Create account',
+        state: AccountCreateState.instance
+      },
+      {
+        choiceCharacter: '2',
+        description: `${signInOutText}`,
+        state: AccountSignInOutState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'My products',
+        state: AccountMyProductsState.instance
+      },
+      {
+        choiceCharacter: '4',
+        description: 'My orders',
+        state: AccountMyOrdersState.instance
+      },
+      {
+        choiceCharacter: '5',
+        description: 'Back to home page',
+        state: HomeState.instance
+      },
+    ];
 
-    if (this.isInvalidChoice) {
-      rl.write("Invalid choice, pick from the options above.\n\n");
-      this.isInvalidChoice = false;
-    }
-
-    const choice = singleCharQuestion(rl, "Choice: ");
-
-    switch (choice) {
-      case "1":
-        return AccountCreateState.instance;
-      case "2":
-        return AccountSignInOutState.instance;
-      case "3":
-        return AccountMyProductsState.instance;
-      case "4":
-        return AccountMyOrdersState.instance;
-      case "5":
-        return HomeState.instance;
-      default:
-        this.isInvalidChoice = true;
-        return AccountState.instance;
-    }
+    const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
+    this.isInvalidChoice = newState === undefined;
+    return newState ? newState : AccountState.instance;
   }
 }

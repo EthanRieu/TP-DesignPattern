@@ -2,17 +2,18 @@ import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../features/auth/AuthService.js";
 import {
-  AccountState,
-  CartPaymentState,
+  CartPaymentCreditState,
+  CartPaymentPayPalState,
+  CartState,
   type Choice,
-  defaultErrorMessage, HomeState,
+  defaultErrorMessage,
   promptForChoices
 } from "../index.js";
 import {readChar} from "../../utils.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 
-export class CartState implements State {
-  public static instance: CartState = new CartState();
+export class CartPaymentState implements State {
+  public static instance: CartPaymentState = new CartPaymentState();
 
   private isInvalidChoice = false;
   private authService: AuthService;
@@ -23,55 +24,45 @@ export class CartState implements State {
   }
 
   async printAndRead(rl: Interface): Promise<State> {
-    if (!this.sessionService.isLoggedIn()) {
-      rl.write("You need to be logged in before accessing your cart.\n\n");
-      rl.write("Press anything to continue to the Account page.\n");
-      await readChar();
-      return AccountState.instance;
-    }
-
     const session = this.sessionService.getSession();
     if (!session) {
       rl.write("Error: Couldn't retrieve authentication session.\n\n");
-      rl.write("Press anything to go back to the Account page.\n");
+      rl.write("Press anything to go back to the cart page.\n");
       await readChar();
-      return AccountState.instance;
+      return CartState.instance;
     }
 
     const user = await this.authService.getUserById(this.sessionService.getSession()!.userId);
     if (!user) {
       rl.write("Error: Couldn't retrieve user.\n\n");
-      rl.write("Press anything to go back to the Account page.\n");
+      rl.write("Press anything to go back to the cart page.\n");
       await readChar();
-      return AccountState.instance;
+      return CartState.instance;
     }
 
-    if (user.role !== "CUSTOMER") {
-      rl.write("Only customers are able to interact with their cart.\n\n");
-      rl.write("Press anything to go back to the Account page.\n");
-      await readChar();
-      return AccountState.instance;
-    }
+    rl.write("Cart payment page:\n\n");
 
-    rl.write("Cart page:\n");
-
-    rl.write("TODO: print cart\n")
-
+    rl.write("Choose your payment method:\n");
     const choices: Choice[] = [
       {
         choiceCharacter: '1',
-        description: 'Continue to payment',
-        state: CartPaymentState.instance
+        description: 'Credit card',
+        state: CartPaymentCreditState.instance
       },
       {
         choiceCharacter: '2',
-        description: 'Go back to home',
-        state: HomeState.instance
+        description: `PayPal`,
+        state: CartPaymentPayPalState.instance
+      },
+      {
+        choiceCharacter: '3',
+        description: 'Go back to cart',
+        state: CartState.instance
       },
     ];
 
     const newState = await promptForChoices(rl, choices, this.isInvalidChoice ? defaultErrorMessage: undefined);
     this.isInvalidChoice = newState === undefined;
-    return newState ? newState : CartState.instance;
+    return newState ? newState : CartPaymentState.instance;
   }
 }

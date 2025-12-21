@@ -18,28 +18,43 @@ import {
   EditUserArgumentsConfig,
 } from './sub-command-arguments/users.js';
 import {
+  type GetProductsArguments,
+  GetProductsArgumentsConfig,
+  type GetFilteredProductsArguments,
+  GetFilteredProductsArgumentsConfig,
+  type GetProductByIdArguments,
+  GetProductByIdArgumentsConfig,
+  type CreateProductArguments,
+  CreateProductArgumentsConfig,
+  type UpdateProductArguments,
+  UpdateProductArgumentsConfig,
+  type DeleteProductArguments,
+  DeleteProductArgumentsConfig,
+} from './sub-command-arguments/catalog.js';
+import {
   type GetOrdersArguments,
   GetOrdersArgumentsConfig,
 } from './sub-command-arguments/orders.js';
 import * as path from 'node:path';
+import { AppLogger } from "../AppLogger.js";
 
 export function parseArgs(cliArgs: string[]): {
   command: string;
   arguments: SubCommandArguments;
 } {
   if (cliArgs.length < 3) {
-    console.error('Missing required command parameter.');
+    AppLogger.error('Missing required command parameter.');
     process.exit(1);
   }
 
   const commandName = cliArgs[2]!;
 
   if (!(Object.values(Commands) as string[]).includes(commandName)) {
-    console.error('Invalid command parameter.\nValid command parameters:');
+    AppLogger.error('Invalid command parameter.\nValid command parameters:');
     for (const commandsKey in Commands) {
-      console.error(' - ' + Commands[commandsKey as keyof typeof Commands]);
+      AppLogger.error(' - ' + Commands[commandsKey as keyof typeof Commands]);
     }
-    console.error(
+    AppLogger.error(
       `\nUsage: ${path.basename(cliArgs[1]!)} (command) (arguments)`,
     );
     process.exit(1);
@@ -93,6 +108,38 @@ export function parseArgs(cliArgs: string[]): {
       break;
     case Commands.EditUser:
       args = parse<EditUserArguments>(EditUserArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+
+    // Case Catalog
+    case Commands.GetProducts:
+      args = parse<GetProductsArguments>(GetProductsArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.GetProductById:
+      args = parse<GetProductByIdArguments>(GetProductByIdArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.GetFilteredProducts:
+      args = parse<GetFilteredProductsArguments>(GetFilteredProductsArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.CreateProduct:
+      args = parse<CreateProductArguments>(CreateProductArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.UpdateProduct:
+      args = parse<UpdateProductArguments>(UpdateProductArgumentsConfig, {
+        argv: rawCommandArguments,
+      });
+      break;
+    case Commands.DeleteProduct:
+      args = parse<DeleteProductArguments>(DeleteProductArgumentsConfig, {
         argv: rawCommandArguments,
       });
       break;

@@ -2,6 +2,7 @@ import type { User } from '@prisma/client';
 import { PrismaClientSingleton } from '../../prisma/client.js';
 import type { IUserCreate, UserRole } from '../../types/index.js';
 import * as bcrypt from 'bcrypt';
+import { AppLogger } from "../../AppLogger.js";
 
 /**
  * Interface abstraite pour la Factory Method
@@ -27,7 +28,7 @@ export class CustomerFactory implements IUserFactory {
     const newUser = await prisma.user.create({
       data: userWithHashedPassword,
     });
-    console.log(`✅ Customer ${userData.email} created successfully`);
+    AppLogger.info(`✅ Customer ${userData.email} created successfully`);
     return newUser;
   }
 }
@@ -48,7 +49,7 @@ export class SellerFactory implements IUserFactory {
     const newUser = await prisma.user.create({
       data: userWithHashedPassword,
     });
-    console.log(`✅ Seller ${userData.email} created successfully`);
+    AppLogger.info(`✅ Seller ${userData.email} created successfully`);
     return newUser;
   }
 }
@@ -69,7 +70,7 @@ export class AdminFactory implements IUserFactory {
     const newUser = await prisma.user.create({
       data: userWithHashedPassword,
     });
-    console.log(`✅ Admin ${userData.email} created successfully`);
+    AppLogger.info(`✅ Admin ${userData.email} created successfully`);
     return newUser;
   }
 }

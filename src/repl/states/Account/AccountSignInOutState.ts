@@ -20,12 +20,12 @@ export class AccountSignInOutState implements State {
       rl.write("Confirm logging out by typing 'Y' (anything else will cancel the operation).\n\n");
       rl.write("> ");
 
-      const confirmation = readChar();
+      const confirmation = await readChar();
       if (confirmation.toLowerCase() === "y") {
         this.sessionService.deleteSession();
         rl.write("\n\n");
         rl.write("Successfully logged out. Press anything to go back to the Account page.\n\n");
-        readChar();
+        await readChar();
       }
 
       return AccountState.instance;
@@ -52,7 +52,7 @@ export class AccountSignInOutState implements State {
       rl.write("Invalid credentials. The log in operation was cancelled. Press anything to go back to the Account page.\n\n");
     }
 
-    readChar();
+    await readChar();
     return AccountState.instance;
   }
 }
