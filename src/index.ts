@@ -108,7 +108,7 @@ async function main() {
     }
 
     case Commands.CreateProduct: {
-      const { name, description, price, stock, category } =
+      const { name, description, price, stock, category, userId } =
         commandArgs as CreateProductArguments;
       const product = await productService.createProduct({
         name,
@@ -116,6 +116,7 @@ async function main() {
         price,
         stock,
         category,
+        userId
       });
       AppLogger.info('Product:', product);
       break;

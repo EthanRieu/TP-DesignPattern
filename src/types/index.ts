@@ -39,6 +39,7 @@ export interface IProduct {
   price: number;
   stock: number;
   category: ProductCategory;
+  userId: string
 }
 
 export interface IProductCreate {
@@ -47,6 +48,7 @@ export interface IProductCreate {
   price: number;
   stock: number;
   category: ProductCategory;
+  userId: string
 }
 
 export interface IProductUpdate {
@@ -56,6 +58,7 @@ export interface IProductUpdate {
   price?: number;
   stock?: number;
   category?: ProductCategory;
+  userId: string
 }
 
 export interface IOrder {

@@ -52,7 +52,8 @@ async function main() {
         description: 'Dernier iPhone avec puce A17',
         price: 1199.99,
         stock: 50,
-        category: 'ELECTRONICS'
+        category: 'ELECTRONICS',
+        userId: seller.id
       }
     }),
     prisma.product.create({
@@ -61,7 +62,8 @@ async function main() {
         description: 'Laptop puissant pour développeurs',
         price: 2499.99,
         stock: 30,
-        category: 'ELECTRONICS'
+        category: 'ELECTRONICS',
+        userId: seller.id
       }
     }),
     prisma.product.create({
@@ -70,7 +72,8 @@ async function main() {
         description: 'T-shirt sport respirant',
         price: 29.99,
         stock: 100,
-        category: 'CLOTHING'
+        category: 'CLOTHING',
+        userId: admin.id
       }
     }),
     prisma.product.create({
@@ -79,7 +82,8 @@ async function main() {
         description: 'Jean classique coupe droite',
         price: 89.99,
         stock: 75,
-        category: 'CLOTHING'
+        category: 'CLOTHING',
+        userId: admin.id
       }
     }),
     prisma.product.create({
@@ -88,7 +92,8 @@ async function main() {
         description: 'Arabica 100% commerce équitable',
         price: 12.99,
         stock: 200,
-        category: 'FOOD'
+        category: 'FOOD',
+        userId: admin.id
       }
     })
   ]);

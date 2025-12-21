@@ -2,19 +2,20 @@ import type { Product } from "@prisma/client";
 import { ProductService } from "./ProductService.js";
 
 export interface IProductFactory {
-    createProduct(name: string, description: string, price: number, stock: number): Promise<Product>;
+    createProduct(name: string, description: string, price: number, stock: number, userId: string): Promise<Product>;
 }
 
 export class ElectronicsFactory implements IProductFactory {
     private productService = ProductService.instance;
 
-    public async createProduct(name: string, description: string, price: number, stock: number): Promise<Product> {
+    public async createProduct(name: string, description: string, price: number, stock: number, userId: string): Promise<Product> {
         return this.productService.createProduct({
             name,
             description,
             price,
             stock,
-            category: 'ELECTRONICS'
+            category: 'ELECTRONICS',
+            userId
         });
     }
 }
@@ -22,13 +23,14 @@ export class ElectronicsFactory implements IProductFactory {
 export class ClothingFactory implements IProductFactory {
     private productService = ProductService.instance;
 
-    public async createProduct(name: string, description: string, price: number, stock: number): Promise<Product> {
+    public async createProduct(name: string, description: string, price: number, stock: number, userId: string): Promise<Product> {
         return this.productService.createProduct({
             name,
             description,
             price,
             stock,
-            category: 'CLOTHING'
+            category: 'CLOTHING',
+            userId
         });
     }
 }
@@ -36,13 +38,14 @@ export class ClothingFactory implements IProductFactory {
 export class FoodFactory implements IProductFactory {
     private productService = ProductService.instance;
 
-    public async createProduct(name: string, description: string, price: number, stock: number): Promise<Product> {
+    public async createProduct(name: string, description: string, price: number, stock: number, userId: string): Promise<Product> {
         return this.productService.createProduct({
             name,
             description,
             price,
             stock,
-            category: 'FOOD'
+            category: 'FOOD',
+            userId
         });
     }
 }

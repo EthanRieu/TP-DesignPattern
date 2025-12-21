@@ -112,11 +112,10 @@ export class CatalogCreateProductState implements State {
         price,
         stock,
         category,
+        userId: user.id
       });
 
       rl.write("Product successfully created!\n");
-
-      rl.write("\nTODO: Assign product to user\n");
     }
     catch (error) {
       rl.write(`Error during product creation: ${error}\n`);

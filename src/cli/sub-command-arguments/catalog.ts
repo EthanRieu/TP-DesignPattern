@@ -31,6 +31,7 @@ export interface CreateProductArguments extends SubCommandArguments {
   price: number;
   stock: number;
   category: ProductCategory;
+  userId: string;
 }
 
 export const CreateProductArgumentsConfig = {
@@ -39,6 +40,7 @@ export const CreateProductArgumentsConfig = {
   price: Number,
   stock: Number,
   category: { type: parseProductCategory, optional: false as const },
+  userId: String
 };
 
 export interface UpdateProductArguments extends SubCommandArguments {
@@ -48,6 +50,7 @@ export interface UpdateProductArguments extends SubCommandArguments {
   price?: number;
   stock?: number;
   category?: ProductCategory;
+  userId?: string;
 }
 
 function parseProductCategory(value: string): ProductCategory {
@@ -66,6 +69,7 @@ export const UpdateProductArgumentsConfig = {
   price: { type: Number, optional: true as const },
   stock: { type: Number, optional: true as const },
   category: { type: parseProductCategory, optional: true as const },
+  userId: { type: String, optional: true as const },
 };
 
 export interface DeleteProductArguments extends SubCommandArguments {
