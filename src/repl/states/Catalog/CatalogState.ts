@@ -8,15 +8,19 @@ import type {ProductCategory} from "../../../types/index.js";
 import type {Product} from "@prisma/client";
 import {CatalogFilterState} from "./CatalogFilterState.js";
 import {CatalogCreateProductState} from "./CatalogCreateProductState.js";
+import {mapProductsToDisplayedProducts} from "./utils.js";
+import {AuthService} from "../../../features/auth/AuthService.js";
 
 export class CatalogState implements State {
   public static instance: CatalogState = new CatalogState();
 
   private filter: ProductCategory | undefined;
   private isInvalidChoice = false;
+  private authService: AuthService;
   private productService: ProductService;
   private constructor() {
     this.productService = ProductService.instance;
+    this.authService = AuthService.instance;
   }
 
   async printAndRead(rl: Interface): Promise<State> {
@@ -32,14 +36,8 @@ export class CatalogState implements State {
 
     rl.write(`Products list:${filterText}\n`);
 
-    consoleTable(products.map((product, index) => {
-      const { id, ...productWithoutId } = product;
-      return {
-        ...productWithoutId,
-        category: capitalize(product.category),
-        index: index + 1,
-      }
-    }), "index");
+    const displayedProducts = await mapProductsToDisplayedProducts(products, this.authService);
+    consoleTable(displayedProducts, "index");
 
     const choices: Choice[] = [
       {

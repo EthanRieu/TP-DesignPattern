@@ -2,17 +2,21 @@ import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {capitalize, consoleTable} from "../../utils.js";
 import {ProductService} from "../../../features/catalog/ProductService.js";
+import {AuthService} from "../../../features/auth/AuthService.js";
 import {type Choice, defaultErrorMessage, promptForChoices} from "../utils.js";
 import {ProductCategoriesList} from "../../../types/index.js";
 import {CatalogState} from "./CatalogState.js";
+import {mapProductsToDisplayedProducts} from "./utils.js";
 
 export class CatalogFilterState implements State {
   public static instance: CatalogFilterState = new CatalogFilterState();
 
   private isInvalidChoice = false;
+  private authService: AuthService;
   private productService: ProductService;
   private constructor() {
     this.productService = ProductService.instance;
+    this.authService = AuthService.instance;
   }
 
   async printAndRead(rl: Interface): Promise<State> {
@@ -20,14 +24,8 @@ export class CatalogFilterState implements State {
 
     rl.write("Products list:\n");
 
-    consoleTable(products.map((product, index) => {
-      const { id, ...productWithoutId } = product;
-      return {
-        ...productWithoutId,
-        category: capitalize(product.category),
-        index: index + 1,
-      }
-    }), "index");
+    const displayedProducts = await mapProductsToDisplayedProducts(products, this.authService);
+    consoleTable(displayedProducts, "index");
 
     rl.write("Filter by category:\n");
     const choices: Choice[] = ProductCategoriesList.map((category, index) => {
