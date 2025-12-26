@@ -43,20 +43,24 @@ export function parseArgs(cliArgs: string[]): {
   arguments: SubCommandArguments;
 } {
   if (cliArgs.length < 3) {
-    AppLogger.error('Missing required command parameter.');
+    let errorMessage = 'Missing required command parameter.\nValid command parameters:\n';
+    for (const commandsKey in Commands) {
+      errorMessage += ' - ' + Commands[commandsKey as keyof typeof Commands] + '\n';
+    }
+    errorMessage += `\nUsage: ${path.basename(cliArgs[1]!)} (command) (arguments)`;
+    AppLogger.error(errorMessage);
     process.exit(1);
   }
 
   const commandName = cliArgs[2]!;
 
   if (!(Object.values(Commands) as string[]).includes(commandName)) {
-    AppLogger.error('Invalid command parameter.\nValid command parameters:');
+    let errorMessage = 'Invalid command parameter.\nValid command parameters:\n';
     for (const commandsKey in Commands) {
-      AppLogger.error(' - ' + Commands[commandsKey as keyof typeof Commands]);
+      errorMessage += ' - ' + Commands[commandsKey as keyof typeof Commands] + '\n';
     }
-    AppLogger.error(
-      `\nUsage: ${path.basename(cliArgs[1]!)} (command) (arguments)`,
-    );
+    errorMessage += `\nUsage: ${path.basename(cliArgs[1]!)} (command) (arguments)`;
+    AppLogger.error(errorMessage);
     process.exit(1);
   }
 
