@@ -44,6 +44,13 @@ export class ProductService {
         });
     }
 
+    public async getUserProducts(userId: string): Promise<Product[]> {
+        const prisma = PrismaClientSingleton.getInstance();
+        return await prisma.product.findMany({
+            where: { userId }
+        });
+    }
+
     public async updateProduct(id: string, data: Partial<IProductCreate>): Promise<Product> {
         const prisma = PrismaClientSingleton.getInstance();
         const product = await prisma.product.update({

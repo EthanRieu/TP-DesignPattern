@@ -1,9 +1,12 @@
 import {questionAsync} from "../../../utils.js";
 import type {Interface} from "node:readline";
 import type {IOrder} from "../../../../types/index.js";
+import {OrderService} from "../../../../features/orders/OrderService.js";
 
-export async function getOrderByIdOrCancelAsync(rl: Interface): Promise<IOrder | false> {
-  rl.write("Provide the order ID to continue. Leave the field blank to go back.\n\n")
+export async function getOrderByIdOrCancelAsync(rl: Interface): Promise<any | false> {
+  rl.write("Provide the order ID to continue. Leave the field blank to go back.\n\n");
+  
+  const orderService = OrderService.instance;
 
   let orderId: string;
   while (true) {
@@ -12,12 +15,17 @@ export async function getOrderByIdOrCancelAsync(rl: Interface): Promise<IOrder |
       return false;
     }
 
-    if (true) {
-      rl.write("TODO: validate and get order by ID\n")
-      // return the order
-      return false;
+    // Valider et récupérer la commande par ID
+    try {
+      const order = await orderService.getOrderById(orderId.trim());
+      
+      if (order) {
+        return order;
+      } else {
+        rl.write("❌ Order not found. Please try again.\n\n");
+      }
+    } catch (error) {
+      rl.write(`❌ Error: ${error instanceof Error ? error.message : String(error)}\n\n`);
     }
-
-    rl.write("Invalid order ID provided.\n\n");
   }
 }
