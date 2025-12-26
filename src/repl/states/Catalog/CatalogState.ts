@@ -3,6 +3,8 @@ import type {Interface} from "node:readline";
 import {capitalize, consoleTable, questionAsync, readChar} from "../../utils.js";
 import {HomeState} from "../HomeState.js";
 import {ProductService} from "../../../features/catalog/ProductService.js";
+import {CartService} from "../../../features/cart/CartService.js";
+import {SessionService} from "../../../features/auth/SessionService.js";
 import {type Choice, defaultErrorMessage, promptForChoices} from "../utils.js";
 import type {ProductCategory} from "../../../types/index.js";
 import type {Product} from "@prisma/client";
@@ -18,9 +20,14 @@ export class CatalogState implements State {
   private isInvalidChoice = false;
   private authService: AuthService;
   private productService: ProductService;
+  private cartService: CartService;
+  private sessionService: SessionService;
+  
   private constructor() {
     this.productService = ProductService.instance;
     this.authService = AuthService.instance;
+    this.cartService = CartService.instance;
+    this.sessionService = SessionService.instance;
   }
 
   async printAndRead(rl: Interface): Promise<State> {
@@ -101,10 +108,24 @@ export class CatalogState implements State {
       rl.write("Invalid product quantity provided.\n\n");
     }
 
-    rl.write(`${productQty} '${product.name}' ${productQty === 1 ? "has": "have"} been added to your cart.\n`)
-    rl.write("Press anything to continue shopping.\n");
+    rl.write(`${productQty} '${product.name}' ${productQty === 1 ? "has": "have"} been added to your cart.\n`);
 
-    rl.write("\n\nTODO: actually add the product(s) to the cart.\n");
+    // Ajouter le produit au panier
+    if (!this.sessionService.isLoggedIn()) {
+      rl.write("\n⚠️  You need to be logged in to add items to cart.\n");
+      rl.write("Press anything to continue shopping.\n");
+      await readChar();
+      return CatalogState.instance;
+    }
+
+    try {
+      await this.cartService.addItem(product.id, productQty);
+      rl.write("✅ Product successfully added to your cart!\n");
+    } catch (error) {
+      rl.write(`\n❌ Error adding to cart: ${error instanceof Error ? error.message : String(error)}\n`);
+    }
+
+    rl.write("Press anything to continue shopping.\n");
     await readChar();
     return CatalogState.instance;
   }

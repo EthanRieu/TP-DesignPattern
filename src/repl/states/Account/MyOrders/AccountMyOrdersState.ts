@@ -1,6 +1,7 @@
 import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../../features/auth/AuthService.js";
+import {OrderService} from "../../../../features/orders/OrderService.js";
 import {consoleTable, readChar} from "../../../utils.js";
 import {
   AccountMyOrdersDeleteState,
@@ -19,9 +20,12 @@ export class AccountMyOrdersState implements State {
   private isInvalidChoice = false;
   private authService: AuthService;
   private sessionService: SessionService;
+  private orderService: OrderService;
+  
   private constructor() {
     this.authService = AuthService.instance;
     this.sessionService = SessionService.instance;
+    this.orderService = OrderService.instance;
   }
 
   async printAndRead(rl: Interface): Promise<State> {
@@ -32,23 +36,35 @@ export class AccountMyOrdersState implements State {
       return AccountState.instance;
     }
 
-    rl.write("My orders page:\n")
+    rl.write("My orders page:\n");
 
-    // TODO: récupérer les commandes depuis la DB
-    const orders = [
-      {
-        id: 1,
-        total: 49.99,
-        itemCount: 1,
-        shippingAddress: "Une rue fictive - 51100 Reims"
-      },
-      {
-        id: 2,
-        total: 499.99,
-        itemCount: 2,
-        shippingAddress: "Une allée fictive - 51000 Châlons-en-Champagne"
-      }
-    ];
+    const session = this.sessionService.getSession();
+    if (!session) {
+      rl.write("Error: Could not retrieve session.\n\n");
+      rl.write("Press anything to go back to the Account page.\n");
+      await readChar();
+      return AccountState.instance;
+    }
+
+    // Récupérer les vraies commandes de l'utilisateur depuis la DB
+    const userOrders = await this.orderService.getUserOrders(session.userId);
+    
+    if (userOrders.length === 0) {
+      rl.write("\n📦 You have no orders yet.\n\n");
+      rl.write("Press anything to go back to the Account page.\n");
+      await readChar();
+      return AccountState.instance;
+    }
+
+    // Formater les commandes pour l'affichage
+    const orders = userOrders.map(order => ({
+      id: order.id,
+      total: order.total,
+      itemCount: (order as any).items?.length ?? 0,
+      shippingAddress: order.shippingAddress,
+      status: order.status,
+      paymentMethod: order.paymentMethod
+    }));
 
     consoleTable(orders, "id");
 
@@ -60,16 +76,11 @@ export class AccountMyOrdersState implements State {
       },
       {
         choiceCharacter: '2',
-        description: 'Edit order',
-        state: AccountMyOrdersEditState.instance
-      },
-      {
-        choiceCharacter: '3',
-        description: 'Delete order',
+        description: 'Cancel order',
         state: AccountMyOrdersDeleteState.instance
       },
       {
-        choiceCharacter: '4',
+        choiceCharacter: '3',
         description: 'Back to account page',
         state: AccountState.instance
       },

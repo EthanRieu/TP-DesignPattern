@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Logger } from "winston";
 import { AppLogger } from "../../AppLogger.js";
+import type { ICart } from "../../types/CartTypes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,7 @@ export interface SessionData {
   email: string;
   userId: string;
   loggedInAt: string;
+  cart?: ICart;
 }
 
 export class SessionService {
@@ -59,6 +61,30 @@ export class SessionService {
 
   public isLoggedIn(): boolean {
     return this.getSession() !== null;
+  }
+
+  public updateCart(cart: ICart): void {
+    const session = this.getSession();
+    if (!session) {
+      throw new Error('No active session. User must be logged in to update cart.');
+    }
+    session.cart = cart;
+    fs.writeFileSync(SESSION_FILE, JSON.stringify(session, null, 2));
+    AppLogger.debug('✅ Cart updated in session');
+  }
+
+  public getCart(): ICart | null {
+    const session = this.getSession();
+    return session?.cart ?? null;
+  }
+
+  public clearCart(): void {
+    const session = this.getSession();
+    if (session) {
+      delete session.cart;
+      fs.writeFileSync(SESSION_FILE, JSON.stringify(session, null, 2));
+      AppLogger.debug('✅ Cart cleared from session');
+    }
   }
 }
 
