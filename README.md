@@ -94,18 +94,30 @@ TP-DesignPattern
     │   │
     │   └───sub-command-arguments       - Définition des types d'arguments additionnels des commandes
     │
-    ├───features                        - Implémentation des fonctionnalités principales et de leurs interactions de l'application
+    ├───features
     │   ├───auth
     │   │       AuthService.ts          - Service singleton permettant de créer, modifier, supprimer, connecter, déconnecter des utilisateurs 
     │   │       SessionService.ts       - Service singleton permettant de gérer et persister la session d'un utilisateur sur son appareil
     │   │       UserFactory.ts          - Fichier exposant une Factory Method aux utilisateurs et utilisant des Abstract Factories en interne pour simplifier la création de différents types d'utilisateurs
     │   │
-    │   ├───catalog                     
+    │   ├───cart
+    │   │       CartService.ts          - Service singleton permettant de lire, créer, modifier, supprimer et valider le panier d'un utilisateur
+    │   │       CartValidator.ts        - Vérifie le stock des produits dans le panier 
+    │   │
+    │   ├───catalog
     │   │       ProductFactory.ts       - Fichier exposant des Abstract Factories pour simplifier la création de différents types de produits
     │   │       ProductService.ts       - Service singleton qui implémente la lecture, création, modification et suppression de produits en base de données  
     │   │       ProductUpdateBuilder.ts - Classe utilisant le pattern Builder pour construire un objet de mise à jour de produit étape par étape
     │   │
-    │   └───payment
+    │   ├───orders                      - Gestion des commandes
+    │   │       OrderService.ts         - Service singleton permettant la lecture, creation et annulation d'une commande. S'abonne aux évènements de paiement pour que lorsque le paiement est validé, la commande est mise à l'état PENDING
+    │   │
+    │   └───payment                     - Gestion du paiement des commandes
+    │           CreditCardAdapter.ts    - Implémentation d'un adapteur de paiement pour les cartes bancaires
+    │           IPaymentAdapter.ts      - Interface Adapter permettant d'avoir une interface commune pour pouvoir traiter des paiements venant de différents moyens de paiement
+    │           IPaymentObserver.ts     - Interface définissant la structure à implémenter pour souscrire à des évènements de paiement 
+    │           PaymentService.ts       - Service singleton utilisant les adapters et contenant des évènements auquel d'autres classes peuvent souscrire (Observer Pattern)
+    │           PayPalAdapter.ts        - Implémentation d'un adapteur de paiement pour les paiements par PayPal
     ├───prisma
     │   │   client.ts                   - Client singleton gérant la connexion unique à la base de données et le logging des opérations sur la base de données
     │   │   dev.db                      - Base de données SQLite
@@ -148,7 +160,7 @@ Voici les Design Patterns utilisés par l'application en fonction de leur catég
   - Singleton : Permet de n'avoir qu'une seule instance d'un objet pour éviter la création d'instances inutiles. Utilisé par les services d'authentification, session, produits et aussi par tous les états de l'interface REPL 
 - Patterns de Structure :
   - Facade : simplification de création et d'utilisation d'un logger global. 
-  - Adapter : sert d'interface entre les différents moyens de paiement avec des systèmes incompatibles entre eux
+  - Adapter : sert d'interface commune entre les différents moyens de paiement avec des systèmes fonctionnant différemment
 - Patterns de Comportement :
-  - Observer : Permet la notification de commande une fois que le paiement est effectué afin de pouvoir valider la commande
+  - Observer : Permet la récéption de notifications de paiements par le service de commandes afin qu'il puisse la valider
   - State : utilisé par toute l'interface REPL pour définir des états de l'interface. La boucle principale n'a juste qu'à exécuter la méthode redéfinie de l'état actuelle
