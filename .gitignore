@@ -9,5 +9,6 @@ node_modules/
 *.db
 *.db-journal
 
-# Fichier de log de l'application quand utilisée en mode REPL
+# Fichiers de données temporaires (session, logs)
+*.session
 prisma.log
