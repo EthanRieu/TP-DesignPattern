@@ -3,4 +3,12 @@
 node_modules/
 .env
 .env.local
-package-lock.json
+/src/generated/prisma
+
+# Base de données SQLite (ne pas versionner)
+*.db
+*.db-journal
+
+# Fichiers de données temporaires (session, logs)
+*.session
+prisma.log
