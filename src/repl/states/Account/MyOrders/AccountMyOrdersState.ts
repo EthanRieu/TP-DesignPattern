@@ -46,7 +46,6 @@ export class AccountMyOrdersState implements State {
       return AccountState.instance;
     }
 
-    // Récupérer les vraies commandes de l'utilisateur depuis la DB
     const userOrders = await this.orderService.getUserOrders(session.userId);
     
     if (userOrders.length === 0) {
@@ -56,7 +55,6 @@ export class AccountMyOrdersState implements State {
       return AccountState.instance;
     }
 
-    // Formater les commandes pour l'affichage
     const orders = userOrders.map(order => ({
       id: order.id,
       total: order.total,
