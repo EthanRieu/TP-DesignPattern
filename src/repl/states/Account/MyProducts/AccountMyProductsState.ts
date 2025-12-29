@@ -1,18 +1,17 @@
 import type {State} from "../../../State.js";
 import type {Interface} from "node:readline";
 import {AuthService} from "../../../../features/auth/AuthService.js";
+import {ProductService} from "../../../../features/catalog/ProductService.js";
 import {consoleTable, readChar} from "../../../utils.js";
 import {
-  AccountMyProductsDeleteState,
   AccountMyProductsEditState,
-  AccountMyProductsGetState,
   AccountState,
   type Choice,
   defaultErrorMessage,
-  HomeState,
   promptForChoices
 } from "../../index.js";
 import {SessionService} from "../../../../features/auth/SessionService.js";
+import {AccountMyProductsDeleteState, AccountMyProductsGetState} from "./index.js"
 
 export class AccountMyProductsState implements State {
   public static instance: AccountMyProductsState = new AccountMyProductsState();
@@ -20,9 +19,12 @@ export class AccountMyProductsState implements State {
   private isInvalidChoice = false;
   private authService: AuthService;
   private sessionService: SessionService;
+  private productService: ProductService;
+  
   private constructor() {
     this.authService = AuthService.instance;
     this.sessionService = SessionService.instance;
+    this.productService = ProductService.instance;
   }
 
   async printAndRead(rl: Interface): Promise<State> {
@@ -33,23 +35,36 @@ export class AccountMyProductsState implements State {
       return AccountState.instance;
     }
 
-    rl.write("My products page:\n")
+    rl.write("My products page:\n");
 
-    // TODO: récupérer les produits depuis la DB
-    const products = [
-      {
-        name: "Café en grains bio",
-        price: 12.99,
-        stock: 200
-      },
-      {
-        name: "iPhone 15 Pro",
-        price: 1199.99,
-        stock: 50
-      }
-    ];
+    const session = this.sessionService.getSession();
+    if (!session) {
+      rl.write("Error: Could not retrieve session.\n\n");
+      rl.write("Press anything to go back to the Account page.\n");
+      await readChar();
+      return AccountState.instance;
+    }
 
-    consoleTable(products, "name");
+    // Récupérer les produits de l'utilisateur connecté
+    const userProducts = await this.productService.getUserProducts(session.userId);
+    
+    if (userProducts.length === 0) {
+      rl.write("\n📦 You have no products yet.\n\n");
+      rl.write("Press anything to go back to the Account page.\n");
+      await readChar();
+      return AccountState.instance;
+    }
+
+    // Formater pour l'affichage
+    const products = userProducts.map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      stock: p.stock,
+      category: p.category
+    }));
+
+    consoleTable(products, "id");
 
     const choices: Choice[] = [
       {

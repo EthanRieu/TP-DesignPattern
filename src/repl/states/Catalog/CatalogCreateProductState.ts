@@ -1,20 +1,23 @@
 import type {State} from "../../State.js";
 import type {Interface} from "node:readline";
 import {capitalize, questionAsync, readChar, singleCharQuestion} from "../../utils.js";
-import {ProductService} from "../../../features/catalog/ProductService.js";
 import {SessionService} from "../../../features/auth/SessionService.js";
 import {CatalogState} from "./CatalogState.js";
 import {AuthService} from "../../../features/auth/AuthService.js";
 import {ProductCategoriesList, type ProductCategory} from "../../../types/index.js";
+import {
+  ClothingFactory,
+  ElectronicsFactory,
+  FoodFactory,
+  type IProductFactory
+} from "../../../features/catalog/ProductFactory.js";
 
 export class CatalogCreateProductState implements State {
   public static instance: CatalogCreateProductState = new CatalogCreateProductState();
 
-  private productService: ProductService;
   private authService: AuthService;
   private sessionService: SessionService;
   private constructor() {
-    this.productService = ProductService.instance;
     this.authService = AuthService.instance;
     this.sessionService = SessionService.instance;
   }
@@ -103,18 +106,24 @@ export class CatalogCreateProductState implements State {
       rl.write("\nInvalid category picked.\n");
     }
 
-    rl.write("\n")
+    let factory: IProductFactory
+
+    switch (category) {
+      case "ELECTRONICS":
+        factory = ElectronicsFactory.instance
+        break;
+      case "CLOTHING":
+        factory = ClothingFactory.instance
+        break;
+      case "FOOD":
+        factory = FoodFactory.instance
+        break;
+    }
+
+    rl.write("\n");
 
     try {
-      const result = this.productService.createProduct({
-        name,
-        description,
-        price,
-        stock,
-        category,
-        userId: user.id
-      });
-
+      const result = await factory.createProduct(name, description, price, stock, user.id);
       rl.write("Product successfully created!\n");
     }
     catch (error) {
